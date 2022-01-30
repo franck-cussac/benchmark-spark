@@ -1,0 +1,43 @@
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: raw-to-parquet-21
+  namespace: spark
+spec:
+  type: Scala
+  mode: cluster
+  sparkVersion: 3.1.1
+  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:1
+  imagePullPolicy: Always
+  mainClass: devoxx.benchmark.RawToParquet
+  mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
+  driver:
+    env:
+      - name: REGION
+        value: "fr-par"
+      - name: INPUT
+        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/time_dim"
+      - name: OUTPUT
+        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/time_dim"
+    envFrom:
+      - secretRef:
+          name: scw-secrets
+    cores: 1
+    memory: "1024m"
+    hostNetwork: true
+    labels:
+      version: 3.1.1
+    serviceAccount: spark-kube
+  executor:
+    serviceAccount: spark-kube
+    env:
+      - name: INPUT
+        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/time_dim"
+      - name: OUTPUT
+        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/time_dim"
+    envFrom:
+      - secretRef:
+          name: scw-secrets
+    cores: 2
+    instances: 2
+    memory: "8g"
