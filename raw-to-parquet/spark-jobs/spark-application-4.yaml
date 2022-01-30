@@ -11,10 +11,6 @@ spec:
   imagePullPolicy: Always
   mainClass: devoxx.benchmark.RawToParquet
   mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
-  hadoopConf:
-    "spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version": "2"
-    "hadoop.mapreduce.fileoutputcommitter.algorithm.version": "2"
-    "mapreduce.fileoutputcommitter.algorithm.version": "2"
   driver:
     env:
       - name: REGION
