@@ -2,6 +2,9 @@
 *.iml
 target
 
+.metals
+.vscode
+
 *.jar
 *.crc
 
