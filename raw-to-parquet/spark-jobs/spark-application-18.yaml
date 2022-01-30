@@ -16,9 +16,9 @@ spec:
       - name: REGION
         value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/ship_mode"
+        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/household_demographics"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/ship_mode"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/household_demographics"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -32,9 +32,9 @@ spec:
     serviceAccount: spark-kube
     env:
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/ship_mode"
+        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/household_demographics"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/ship_mode"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/household_demographics"
     envFrom:
       - secretRef:
           name: scw-secrets

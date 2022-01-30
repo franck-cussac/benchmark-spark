@@ -18,7 +18,7 @@ spec:
       - name: INPUT
         value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/web_site"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/web_site"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/web_site"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -34,7 +34,7 @@ spec:
       - name: INPUT
         value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/web_site"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/web_site"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/web_site"
     envFrom:
       - secretRef:
           name: scw-secrets

@@ -18,7 +18,7 @@ spec:
       - name: INPUT
         value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/catalog_returns"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/catalog_returns"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/catalog_returns"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -34,10 +34,10 @@ spec:
       - name: INPUT
         value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/catalog_returns"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/catalog_returns"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/catalog_returns"
     envFrom:
       - secretRef:
           name: scw-secrets
-    cores: 5
-    instances: 30
-    memory: "28g"
+    cores: 3
+    instances: 50
+    memory: "16g"

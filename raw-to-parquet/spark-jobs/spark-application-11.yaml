@@ -18,7 +18,7 @@ spec:
       - name: INPUT
         value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/customer_demographics"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/customer_demographics"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/customer_demographics"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -32,9 +32,9 @@ spec:
     serviceAccount: spark-kube
     env:
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/catalogcustomer_demographics_returns"
+        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/customer_demographics"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/customer_demographics"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/customer_demographics"
     envFrom:
       - secretRef:
           name: scw-secrets

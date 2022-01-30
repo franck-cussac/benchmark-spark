@@ -31,7 +31,7 @@ object RawToParquet {
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", access_key)
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
       spark.sparkContext.hadoopConfiguration.set("mapreduce.fileoutputcommitter.algorithm.version", "2")
-      rawToParquet(inputFile, outputFile)
+      rawToParquet(inputFile, outputFile, inputFile.split('/').last)
     }
     if (res.isFailure) {
       throw res.failed.get
@@ -42,11 +42,11 @@ object RawToParquet {
     spark.stop()
   }
 
-  def rawToParquet(inputFile: String, outputFile: String)(implicit spark: SparkSession): Unit = {
+  def rawToParquet(inputFile: String, outputFile: String, tableName: String)(implicit spark: SparkSession): Unit = {
     println(s"input = $inputFile")
     println(s"output = $outputFile")
 
-    val df = spark.read.option("delimiter", "|").csv(inputFile)
+    val df = spark.read.schema(Tables.schemas(tableName)).option("delimiter", "|").csv(inputFile)
     df.write.mode(SaveMode.Overwrite).parquet(outputFile)
   }
 }
