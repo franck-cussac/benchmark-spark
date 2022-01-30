@@ -4,7 +4,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types._
 
 object Tables {
-    val tableName = Seq(
+    val allTableName = Seq(
         "call_center",
         "catalog_page",
         "catalog_returns",
@@ -29,6 +29,9 @@ object Tables {
         "web_returns",
         "web_sales",
         "web_site",
+    )
+    val tableName = Seq(
+        "web_page"
     )
 
     val schemas = Map(
