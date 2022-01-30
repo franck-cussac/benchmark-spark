@@ -2,6 +2,8 @@ package ked
 
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
+import scala.util._
+
 object Benchmark {
     val APP_NAME = "spark-benchmark"
 
@@ -17,7 +19,6 @@ object Benchmark {
         implicit val spark = SparkSession.builder()
             .appName(APP_NAME)
             .getOrCreate()
-        import spark.implicits._
 
         println(s"sys.env = ${sys.env}")
 
@@ -47,6 +48,8 @@ object Benchmark {
     }
 
     def start(experimentName: String, queryMode: String, inputPath: String, outputPath: String)(implicit spark: SparkSession): Unit = {
+        import spark.implicits._
+
         Tables.createAll(inputPath)
         val queries = queryMode match {
             case "simple" => Queries.simple
