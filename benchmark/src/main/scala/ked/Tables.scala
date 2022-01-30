@@ -512,8 +512,6 @@ object Tables {
     }
 
     def read(path: String)(tableName: String)(implicit spark: SparkSession): Unit = {
-        val rdd = spark.read.parquet(s"$path/$tableName").rdd
-        val schema = schemas(tableName)
-        spark.createDataFrame(rdd, schema).createOrReplaceTempView(tableName)
+        spark.read.parquet(s"$path/$tableName").createOrReplaceTempView(tableName)
     }
 }

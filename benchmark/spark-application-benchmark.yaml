@@ -16,9 +16,9 @@ spec:
       - name: REGION
         value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/"
+        value: "s3a://datalake-benchmark-spark/data/parquet/TPC-DS/10TB/"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/results"
+        value: "s3a://datalake-benchmark-spark/data/results"
       - name: EXPERIMENT_NAME
         value: "test"
       - name: QUERY_MODE
@@ -38,13 +38,13 @@ spec:
       - name: REGION
         value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/parquet/TPC-DS/10TB/"
+        value: "s3a://datalake-benchmark-spark/data/parquet/TPC-DS/10TB/"
       - name: OUTPUT
-        value: "s3a://datalake-spark-benchmark/data/results"
+        value: "s3a://datalake-benchmark-spark/data/results"
       - name: EXPERIMENT_NAME
         value: "test"
       - name: QUERY_MODE
-        value: "simple"
+        value: "test"
     envFrom:
       - secretRef:
           name: scw-secrets

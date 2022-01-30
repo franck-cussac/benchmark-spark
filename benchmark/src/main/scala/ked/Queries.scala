@@ -18,7 +18,6 @@ object Queries {
             |  ss_quantity,
             |  ss_list_price,
             |  ss_coupon_amt,
-            |  ss_coupon_amt,
             |  ss_cdemo_sk,
             |  ss_item_sk,
             |  ss_promo_sk,
@@ -26,6 +25,15 @@ object Queries {
             |from store_sales
             |where
             |  ss_sold_date_sk between 2450815 and 2451179
+        """.stripMargin)
+    )
+
+    val test = Seq(
+        ("rw",
+        """
+            |select
+            |  *
+            |from web_page
         """.stripMargin)
     )
 

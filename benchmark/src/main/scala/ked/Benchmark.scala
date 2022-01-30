@@ -54,6 +54,7 @@ object Benchmark {
         val queries = queryMode match {
             case "simple" => Queries.simple
             case "tpcds" => Queries.tpcds1_4
+            case "test" => Queries.test
             case _  => Seq()
         }
 
