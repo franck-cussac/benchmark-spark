@@ -8,13 +8,12 @@
     <description>
         spark benchmark base on TPC-DS
     </description>
+
     <properties>
-        <maven.compiler.source>1.11</maven.compiler.source>
-        <maven.compiler.target>1.11</maven.compiler.target>
-        <encoding>UTF-8</encoding>
+        <scala.version>2.12</scala.version>
+        <scala.exact.version>${scala.version}.15</scala.exact.version>
         <spark.version>3.1.1</spark.version>
-        <scala.version>2.12.15</scala.version>
-        <scala.compat.version>2.12</scala.compat.version>
+        <scala.test.version>3.0.8</scala.test.version>
         <hadoop.version>3.2.0</hadoop.version>
     </properties>
 
@@ -22,20 +21,25 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-            <scope>provided</scope>
+            <version>${scala.exact.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.compat.version}</artifactId>
+            <artifactId>spark-core_${scala.version}</artifactId>
             <version>${spark.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.compat.version}</artifactId>
+            <artifactId>spark-sql_${scala.version}</artifactId>
             <version>${spark.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.version}</artifactId>
+            <version>${scala.test.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -48,9 +52,8 @@
             <version>${hadoop.version}</version>
         </dependency>
     </dependencies>
+
     <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -58,9 +61,39 @@
                 <version>4.5.6</version>
                 <executions>
                     <execution>
+                        <id>1</id>
+                        <phase>pre-site</phase>
                         <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>2</id>
+                        <goals>
+                            <goal>add-source</goal>
                             <goal>compile</goal>
                             <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala.exact.version}</scalaVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <junitxml>.</junitxml>
+                    <filereports>WDF TestSuite.txt</filereports>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -69,45 +102,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
-                <configuration>
-                    <!-- Remove signed keys to prevent security exceptions on uber jar -->
-                    <!-- See https://stackoverflow.com/a/6743609/7245239 -->
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                    <transformers>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>fr.esgi.spark.Correction</mainClass>
-                        </transformer>
-                    </transformers>
-                    <artifactSet>
-                        <excludes>
-                            <exclude>javax.servlet:*</exclude>
-                            <exclude>org.apache.hadoop:*</exclude>
-                            <exclude>org.apache.maven.plugins:*</exclude>
-                            <exclude>org.apache.spark:*</exclude>
-                            <exclude>org.apache.avro:*</exclude>
-                            <exclude>org.apache.parquet:*</exclude>
-                            <exclude>org.scala-lang:*</exclude>
-                        </excludes>
-                    </artifactSet>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <shadedClassifierName>shaded</shadedClassifierName>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>shaded</shadedClassifierName>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
