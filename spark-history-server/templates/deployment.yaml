@@ -1,0 +1,74 @@
+{{- $schema := .Values.sparkEventLogStorage.cloudProvider }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "spark-hs.fullname" . }}
+  labels:
+    app: {{ template "spark-hs.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "spark-hs.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "spark-hs.fullname" . }}
+    spec:
+      nodeSelector:
+        type: core
+      initContainers:
+      - name: {{ .Chart.Name }}-init-config
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+          - secretRef:
+              name: {{ default (printf "%s" (include "spark-hs.fullname" .)) .Values.sparkEventLogStorage.secretName }}
+        command:
+          - '/bin/sh'
+          - '-c'
+          - >
+            envsubst < /opt/spark/prepared_conf/spark-defaults.conf > /opt/spark/conf/spark-defaults.conf;
+        volumeMounts:
+          - name: config-volume
+            mountPath: /opt/spark/conf/
+          - name: config-init-volume
+            mountPath: /opt/spark/prepared_conf/spark-defaults.conf
+            subPath: spark-defaults.conf
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+          - '/opt/spark/sbin/start-history-server.sh'
+        envFrom:
+          - secretRef:
+              name: {{ default (printf "%s" (include "spark-hs.fullname" .)) .Values.sparkEventLogStorage.secretName }}
+        env:
+          - name: SPARK_NO_DAEMONIZE
+            value: "false"
+          - name: SPARK_HISTORY_OPTS
+            value: "-Dspark.history.fs.logDirectory=wasb://{{ .Values.sparkEventLogStorage.logDirectory }}@$storageAccount.blob.core.windows.net/"
+        volumeMounts:
+          - name: config-volume
+            mountPath: /opt/spark/conf/spark-defaults.conf
+            subPath: spark-defaults.conf
+        ports:
+          - name: http
+            containerPort: {{ .Values.service.internalPort }}
+            protocol: TCP
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: config-volume
+          emptyDir: {}
+        - name: config-init-volume
+          configMap:
+            name: {{ template "spark-hs.fullname" . }}-spark-hs-config
+      {{- if or (eq $schema "google") ((eq $schema "oracle")) }}
+        - name: secret-volume
+          secret:
+            secretName: {{ default (printf "%s" (include "spark-hs.fullname" .)) .Values.sparkEventLogStorage.secretName }}
+      {{- end }}

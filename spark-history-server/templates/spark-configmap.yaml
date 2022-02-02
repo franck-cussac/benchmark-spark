@@ -1,0 +1,14 @@
+{{- $schema := .Values.sparkEventLogStorage.cloudProvider }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ template "spark-hs.fullname" . }}-spark-hs-config
+data:
+  spark-defaults.conf: |-
+    {{- if .Values.sparkEventLogStorage.logDirectory }}
+    
+    {{- if eq $schema "azure" }}
+    spark.hadoop.fs.azure.account.key.$storageAccount.blob.core.windows.net=$accessKey
+    {{- end }}
+
+    {{- end }}
