@@ -21,9 +21,17 @@ spec:
       - name: {{ .Chart.Name }}-init-config
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        envFrom:
-          - secretRef:
-              name: {{ default (printf "%s" (include "spark-hs.fullname" .)) .Values.sparkEventLogStorage.secretName }}
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sparkEventLogStorage.secretName }}
+                key: SCW_ACCESS_KEY
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sparkEventLogStorage.secretName }}
+                key: SCW_SECRET_KEY
         command:
           - '/bin/sh'
           - '-c'
@@ -41,14 +49,19 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
           - '/opt/spark/sbin/start-history-server.sh'
-        envFrom:
-          - secretRef:
-              name: {{ default (printf "%s" (include "spark-hs.fullname" .)) .Values.sparkEventLogStorage.secretName }}
         env:
           - name: SPARK_NO_DAEMONIZE
             value: "false"
-          - name: SPARK_HISTORY_OPTS
-            value: "-Dspark.history.fs.logDirectory=wasb://{{ .Values.sparkEventLogStorage.logDirectory }}@$storageAccount.blob.core.windows.net/"
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sparkEventLogStorage.secretName }}
+                key: SCW_ACCESS_KEY
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sparkEventLogStorage.secretName }}
+                key: SCW_SECRET_KEY
         volumeMounts:
           - name: config-volume
             mountPath: /opt/spark/conf/spark-defaults.conf

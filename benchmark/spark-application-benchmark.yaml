@@ -23,6 +23,8 @@ spec:
         value: "test"
       - name: QUERY_MODE
         value: "simple"
+      - name: OUTPUT_MODE
+        value: "none"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -45,6 +47,8 @@ spec:
         value: "test"
       - name: QUERY_MODE
         value: "test"
+      - name: OUTPUT_MODE
+        value: "none"
     envFrom:
       - secretRef:
           name: scw-secrets

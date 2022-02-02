@@ -16,10 +16,6 @@ object Benchmark {
     }
 
     def main(args: Array[String]): Unit = {
-        implicit val spark = SparkSession.builder()
-            .appName(APP_NAME)
-            .getOrCreate()
-
         println(s"sys.env = ${sys.env}")
 
         val res = for {
@@ -30,12 +26,19 @@ object Benchmark {
             outputPath <- sys.env.get("OUTPUT").toTry("output parameter not found")
             experimentName <- sys.env.get("EXPERIMENT_NAME").toTry("experiment_name parameter not found")
             queryMode <- sys.env.get("QUERY_MODE").toTry("query_mode parameter not found")
+            outputMode <- sys.env.get("OUTPUT_MODE").toTry("output_mode parameter not found")
         } yield {
-            spark.sparkContext.hadoopConfiguration.set("fs.s3a.endpoint", s"https://s3.$region.scw.cloud");
-            spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", access_key)
-            spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
-            spark.sparkContext.hadoopConfiguration.set("mapreduce.fileoutputcommitter.algorithm.version", "2")
-            start(experimentName, queryMode, inputPath, outputPath)
+            implicit val spark = SparkSession.builder()
+                .appName(APP_NAME)
+                .config("spark.eventLog.enabled", true)
+                .config("spark.eventLog.dir", "s3a://datalake-benchmark-spark/spark-history-server/")
+                .config("spark.hadoop.fs.s3a.endpoint", s"https://s3.$region.scw.cloud")
+                .config("spark.hadoop.fs.s3a.access.key", access_key)
+                .config("spark.hadoop.fs.s3a.secret.key", secret_key)
+                .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
+                .getOrCreate()
+
+            start(experimentName, queryMode, outputMode, inputPath, outputPath)
         }
 
         if (res.isFailure) {
@@ -47,7 +50,7 @@ object Benchmark {
         spark.stop()
     }
 
-    def start(experimentName: String, queryMode: String, inputPath: String, outputPath: String)(implicit spark: SparkSession): Unit = {
+    def start(experimentName: String, queryMode: String, outputMode: String, inputPath: String, outputPath: String)(implicit spark: SparkSession): Unit = {
         import spark.implicits._
 
         Tables.createAll(inputPath)
@@ -61,7 +64,13 @@ object Benchmark {
         val benchmarkResults = queries.map { case (name, query) => 
             println(s"execute query $name")
             val startTime = System.currentTimeMillis()
-            spark.sql(query).write.mode(SaveMode.Overwrite).parquet(s"$outputPath/query_results/$name")
+            val result = spark.sql(query)
+
+            val output = outputMode match {
+                case "parquet" => result.write.mode(SaveMode.Overwrite).parquet(s"$outputPath/query_results/$name")
+                case "node" => result.foreach { _ => ():Unit }
+            }
+            
             val endTime = System.currentTimeMillis()
             (name, endTime - startTime)
         }

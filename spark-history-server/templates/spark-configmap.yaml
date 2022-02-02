@@ -6,7 +6,7 @@ metadata:
 data:
   spark-defaults.conf: |-
     {{- if .Values.sparkEventLogStorage.logDirectory }}
-    
+    spark.hadoop.fs.s3a.endpoint=https://s3.fr-par.scw.cloud
     {{- if eq $schema "azure" }}
     spark.hadoop.fs.azure.account.key.$storageAccount.blob.core.windows.net=$accessKey
     {{- end }}
