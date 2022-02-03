@@ -9,12 +9,26 @@
         spark benchmark base on TPC-DS
     </description>
 
+    <profiles>
+        <profile>
+            <id>scaleway</id>
+            <properties>
+                <scaleway-scope>compile</scaleway-scope>
+                <aws-scope>compile</aws-scope>
+                <hadoop-scope>compile</hadoop-scope>
+            </properties>
+        </profile>
+    </profiles>
+
     <properties>
         <scala.version>2.12</scala.version>
         <scala.exact.version>${scala.version}.15</scala.exact.version>
         <spark.version>3.1.1</spark.version>
         <scala.test.version>3.0.8</scala.test.version>
         <hadoop.version>3.2.0</hadoop.version>
+        <scaleway-scope>provided</scaleway-scope>
+        <aws-scope>provided</aws-scope>
+        <hadoop-scope>provided</hadoop-scope>
     </properties>
 
     <dependencies>
@@ -45,11 +59,13 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <version>${hadoop.version}</version>
+            <scope>${hadoop-scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-aws</artifactId>
             <version>${hadoop.version}</version>
+            <scope>${aws-scope}</scope>
         </dependency>
     </dependencies>
 

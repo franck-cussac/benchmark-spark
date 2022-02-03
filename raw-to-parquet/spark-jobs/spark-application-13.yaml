@@ -7,10 +7,16 @@ spec:
   type: Scala
   mode: cluster
   sparkVersion: 3.1.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:1
+  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:hadoop-3.3.1
   imagePullPolicy: Always
   mainClass: devoxx.benchmark.RawToParquet
   mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
+  hadoopConf:
+    "fs.s3a.committer.magic.enabled": "true"
+    "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
+    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "fs.s3a.committer.name": "magic"
+    "mapreduce.fileoutputcommitter.algorithm.version": "2"
   driver:
     env:
       - name: REGION
@@ -38,6 +44,6 @@ spec:
     envFrom:
       - secretRef:
           name: scw-secrets
-    cores: 2
+    cores: 1
     instances: 1
-    memory: "8g"
+    memory: "4g"

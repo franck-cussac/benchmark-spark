@@ -35,7 +35,6 @@ object Benchmark {
                 .config("spark.hadoop.fs.s3a.endpoint", s"https://s3.$region.scw.cloud")
                 .config("spark.hadoop.fs.s3a.access.key", access_key)
                 .config("spark.hadoop.fs.s3a.secret.key", secret_key)
-                .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
                 .getOrCreate()
 
             start(experimentName, queryMode, outputMode, inputPath, outputPath)

@@ -11,6 +11,11 @@ spec:
   imagePullPolicy: Always
   mainClass: ked.Benchmark
   mainApplicationFile: local:///opt/spark/examples/jars/spark-benchmark.jar
+  hadoopConf:
+    "fs.s3a.committer.magic.enabled": "true"
+    "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
+    "fs.s3a.committer.name": "magic"
+    "mapreduce.fileoutputcommitter.algorithm.version": "10"
   driver:
     env:
       - name: REGION
