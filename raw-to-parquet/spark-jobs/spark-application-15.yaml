@@ -7,16 +7,23 @@ spec:
   type: Scala
   mode: cluster
   sparkVersion: 3.1.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:1
+  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:count
   imagePullPolicy: Always
   mainClass: devoxx.benchmark.RawToParquet
   mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
+  hadoopConf:
+    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
+    "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol"
+    "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+    "fs.s3a.committer.magic.enabled": "true"
+    "fs.s3a.committer.name": "magic"
   driver:
     env:
       - name: REGION
         value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/promotion"
+        value: "s3a://datalake-benchmark-spark/data/raw/TPC-DS/10TB/promotion"
       - name: OUTPUT
         value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/promotion"
     envFrom:
@@ -32,7 +39,7 @@ spec:
     serviceAccount: spark-kube
     env:
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/promotion"
+        value: "s3a://datalake-benchmark-spark/data/raw/TPC-DS/10TB/promotion"
       - name: OUTPUT
         value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/promotion"
     envFrom:

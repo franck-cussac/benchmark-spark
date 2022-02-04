@@ -43,8 +43,13 @@ object RawToParquet {
     println(s"input = $inputFile")
     println(s"output = $outputFile")
 
-    val df = spark.read.schema(Tables.schemas(tableName)).option("delimiter", "|").csv(inputFile)
-    df.write.mode(SaveMode.Overwrite).parquet(outputFile)
+    val raw = spark.read.schema(Tables.schemas(tableName)).option("delimiter", "|").csv(s"s3a://datalake-spark-benchmark/data/TPC-DS/10TB/$tableName")
+    val customRaw = spark.read.schema(Tables.schemas(tableName)).option("delimiter", "|").csv(s"s3a://datalake-benchmark-spark/data/raw/TPC-DS/10TB/$tableName")
+    val clean = spark.read.parquet(s"s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/$tableName")
+
+    println(s"raw data has ${raw.count()} lines")
+    println(s"customRaw data has ${customRaw.count()} lines")
+    println(s"clean data has ${clean.count()} lines")
   }
 }
 
