@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: rg.fr-par.scw.cloud/benchmark-spark/benchmark
-  tag: "1.0"
+  tag: spark-history-server
   pullPolicy: Always
 
 service:
@@ -33,32 +33,8 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
-    #
-    #   Rewrite target URI without basePath part: https://kubernetes.github.io/ingress-nginx/examples/rewrite/#rewrite
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    #
-    #   Handle server-side redirects to the Locations without basePath prepended: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#proxy-redirect
-    nginx.ingress.kubernetes.io/proxy-redirect-from: http://$host/history/
-    nginx.ingress.kubernetes.io/proxy-redirect-to: /history-server/history/
-    #
-    #   Add custom config snippet to rewrite url links to pages and static files
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header Accept-Encoding ""; # disable compression of static files to apply sub_filter
-      sub_filter_last_modified off;
-      # Adding a `base href` and stripping the leading `/` from href/src tightly covers most all URL
-      sub_filter '<head>' '<head> <base href="/history-server/">'; # add base url
-      sub_filter 'href="/' 'href="'; # remove absolute URL path so base url applies
-      sub_filter 'src="/' 'src="'; # remove absolute URL path so base url applies
-    
-      sub_filter '/{{num}}/jobs/' '/jobs/';
-      sub_filter "setUIRoot('')" "setUIRoot('/history-server')"; # Set UI root for JS scripts
-      sub_filter "document.baseURI.split" "document.documentURI.split"; # Executors page issue fix
-    
-      sub_filter_once off;
-      sub_filter_types text/html text/css text/javascript application/javascript; # Specify filter types to prevent processing all files
-  path: /history-server/?(.*) # Capture target URI part to remove basePath on `rewrite-target` above
-  hosts:
-    -  "spark-history-server.729b3aaa-7e79-48fe-bbd6-4579f04538b2.nodes.k8s.fr-par.scw.cloud"
+  path: / # Capture target URI part to remove basePath on `rewrite-target` above
+  host: "spark-history-server.729b3aaa-7e79-48fe-bbd6-4579f04538b2.nodes.k8s.fr-par.scw.cloud"
   tls: []
 
 sparkEventLogStorage:

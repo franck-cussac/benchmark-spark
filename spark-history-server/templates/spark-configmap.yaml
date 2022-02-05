@@ -8,3 +8,4 @@ data:
     spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID
     spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY
     spark.hadoop.fs.s3a.endpoint=https://s3.fr-par.scw.cloud
+    spark.history.fs.logDirectory={{ .Values.sparkEventLogStorage.logDirectory }}
