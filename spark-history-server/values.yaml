@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: rg.fr-par.scw.cloud/benchmark-spark/benchmark
-  tag: spark-history-server
+  repository: rg.fr-par.scw.cloud/benchmark-spark/spark
+  tag: "3.2.1"
   pullPolicy: Always
 
 service:

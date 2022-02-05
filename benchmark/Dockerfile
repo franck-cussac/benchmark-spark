@@ -1,8 +1,3 @@
-FROM  curlimages/curl as dl
-
-RUN mkdir -p /tmp/bin
-RUN curl  -o /tmp/bin/envsubst -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` && chmod +x /tmp/bin/envsubst
-
 FROM maven:3.8.4-jdk-11 as builder
 
 WORKDIR /app
