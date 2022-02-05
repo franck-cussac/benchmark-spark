@@ -1,5 +1,5 @@
 ARG java_image_tag=8-jre-slim
-ARG SPARK_VERSION=3.0.2
+ARG SPARK_VERSION=3.2.1
 ARG HADOOP_VERSION=3.2
 
 FROM  curlimages/curl as build
@@ -14,10 +14,6 @@ RUN mkdir -p /tmp/jars
 
 RUN curl -o /tmp/jars/jetty-util-9.3.24.v20180605.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.3.24.v20180605/jetty-util-9.3.24.v20180605.jar
 RUN curl -o /tmp/jars/jetty-util-ajax-9.3.24.v20180605.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util-ajax/9.3.24.v20180605/jetty-util-ajax-9.3.24.v20180605.jar
-
-RUN curl -o /tmp/jars/azure-storage-7.0.0.jar https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/7.0.0/azure-storage-7.0.0.jar
-RUN curl -o /tmp/jars/spark-avro_2.12-3.0.1.jar https://repo1.maven.org/maven2/org/apache/spark/spark-avro_2.12/3.0.1/spark-avro_2.12-3.0.1.jar
-RUN curl -o /tmp/jars/hadoop-azure-3.2.0.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-azure/3.2.0/hadoop-azure-3.2.0.jar
 
 FROM openjdk:${java_image_tag}
 
