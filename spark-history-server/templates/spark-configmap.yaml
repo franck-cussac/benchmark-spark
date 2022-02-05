@@ -5,10 +5,6 @@ metadata:
   name: {{ template "spark-hs.fullname" . }}-spark-hs-config
 data:
   spark-defaults.conf: |-
-    {{- if .Values.sparkEventLogStorage.logDirectory }}
+    spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID
+    spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY
     spark.hadoop.fs.s3a.endpoint=https://s3.fr-par.scw.cloud
-    {{- if eq $schema "azure" }}
-    spark.hadoop.fs.azure.account.key.$storageAccount.blob.core.windows.net=$accessKey
-    {{- end }}
-
-    {{- end }}

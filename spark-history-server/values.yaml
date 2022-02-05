@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/spark-operator/spark
-  tag: v3.1.1-hadoop3
+  repository: rg.fr-par.scw.cloud/benchmark-spark/benchmark
+  tag: "1.0"
   pullPolicy: Always
 
 service:
@@ -27,11 +27,6 @@ resources:
     cpu: 500m
     memory: 512Mi
 
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
 
 ingress:
   enabled: true

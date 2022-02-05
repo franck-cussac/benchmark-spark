@@ -17,7 +17,7 @@ object Benchmark {
 
     def main(args: Array[String]): Unit = {
         println(s"sys.env = ${sys.env}")
-
+        
         val res = for {
             region <- sys.env.get("REGION").toTry("region parameter not found")
             access_key <- sys.env.get("SCW_ACCESS_KEY").toTry("access_key parameter not found")
@@ -28,7 +28,7 @@ object Benchmark {
             queryMode <- sys.env.get("QUERY_MODE").toTry("query_mode parameter not found")
             outputMode <- sys.env.get("OUTPUT_MODE").toTry("output_mode parameter not found")
         } yield {
-            implicit val spark = SparkSession.builder()
+            implicit val spark: SparkSession = SparkSession.builder()
                 .appName(APP_NAME)
                 .config("spark.eventLog.enabled", true)
                 .config("spark.eventLog.dir", "s3a://datalake-benchmark-spark/spark-history-server/")
@@ -38,7 +38,9 @@ object Benchmark {
                 .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
                 .getOrCreate()
 
-            start(experimentName, queryMode, outputMode, inputPath, outputPath)
+            val r = Try(start(experimentName, queryMode, outputMode, inputPath, outputPath))
+            spark.stop()
+            r
         }
 
         if (res.isFailure) {
@@ -47,7 +49,6 @@ object Benchmark {
         else {
             println("Run with success !")
         }
-        spark.stop()
     }
 
     def start(experimentName: String, queryMode: String, outputMode: String, inputPath: String, outputPath: String)(implicit spark: SparkSession): Unit = {
