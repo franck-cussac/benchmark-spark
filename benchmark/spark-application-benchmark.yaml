@@ -6,11 +6,16 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  sparkVersion: 3.1.1
+  sparkVersion: 3.2.1
   image: rg.fr-par.scw.cloud/benchmark-spark/benchmark:1.0
   imagePullPolicy: Always
   mainClass: ked.Benchmark
   mainApplicationFile: local:///opt/spark/examples/jars/spark-benchmark.jar
+  sparkConf:
+    spark.eventLog.enabled: "true"
+    spark.eventLog.dir: s3a://datalake-benchmark-spark/spark-history-server/
+  hadoopConf:
+    mapreduce.fileoutputcommitter.algorithm.version: "2"
   driver:
     env:
       - name: REGION
@@ -20,9 +25,9 @@ spec:
       - name: OUTPUT
         value: "s3a://datalake-benchmark-spark/data/results"
       - name: EXPERIMENT_NAME
-        value: "test"
+        value: "tpcds-none"
       - name: QUERY_MODE
-        value: "simple"
+        value: "tpcds"
       - name: OUTPUT_MODE
         value: "none"
     envFrom:
@@ -32,7 +37,7 @@ spec:
     memory: "1024m"
     hostNetwork: true
     labels:
-      version: 3.1.1
+      version: 3.2.1
     serviceAccount: spark-kube
   executor:
     serviceAccount: spark-kube

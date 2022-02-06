@@ -30,17 +30,23 @@ object Benchmark {
         } yield {
             implicit val spark: SparkSession = SparkSession.builder()
                 .appName(APP_NAME)
-                .config("spark.eventLog.enabled", true)
-                .config("spark.eventLog.dir", "s3a://datalake-benchmark-spark/spark-history-server/")
                 .config("spark.hadoop.fs.s3a.endpoint", s"https://s3.$region.scw.cloud")
                 .config("spark.hadoop.fs.s3a.access.key", access_key)
                 .config("spark.hadoop.fs.s3a.secret.key", secret_key)
-                .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
                 .getOrCreate()
 
-            val r = Try(start(experimentName, queryMode, outputMode, inputPath, outputPath))
+            val r = Try(
+                queryMode match {
+                    case "simple" => Tables.createSimple(inputPath)
+                    case "test" => Tables.createTest(inputPath)
+                    case _ => Tables.createAll(inputPath)
+                }
+            ).map{ _ =>
+                start(experimentName, queryMode, outputMode, inputPath, outputPath)
+            }
             spark.stop()
-            r
+
+            r.get
         }
 
         if (res.isFailure) {
@@ -54,7 +60,6 @@ object Benchmark {
     def start(experimentName: String, queryMode: String, outputMode: String, inputPath: String, outputPath: String)(implicit spark: SparkSession): Unit = {
         import spark.implicits._
 
-        Tables.createAll(inputPath)
         val queries = queryMode match {
             case "simple" => Queries.simple
             case "tpcds" => Queries.tpcds1_4
@@ -69,11 +74,12 @@ object Benchmark {
 
             val output = outputMode match {
                 case "parquet" => result.write.mode(SaveMode.Overwrite).parquet(s"$outputPath/query_results/$name")
-                case "node" => result.foreach { _ => ():Unit }
+                case "none" => result.foreach { _ => ():Unit }
             }
             
-            val endTime = System.currentTimeMillis()
-            (name, endTime - startTime)
+            val execTime = System.currentTimeMillis() - startTime
+            println(s"$name finished in $execTime ms")
+            (name, execTime)
         }
 
         benchmarkResults.toDF("query_name", "execution_time").coalesce(1).write.mode(SaveMode.Overwrite).csv(s"$outputPath/experiment/name=$experimentName")

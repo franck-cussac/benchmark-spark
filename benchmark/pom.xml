@@ -6,15 +6,15 @@
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <description>
-        spark benchmark base on TPC-DS
+        spark benchmark based on TPC-DS
     </description>
 
     <properties>
         <scala.version>2.12</scala.version>
         <scala.exact.version>${scala.version}.15</scala.exact.version>
-        <spark.version>3.1.1</spark.version>
+        <spark.version>3.2.1</spark.version>
         <scala.test.version>3.0.8</scala.test.version>
-        <hadoop.version>3.2.0</hadoop.version>
+        <hadoop.version>3.3.1</hadoop.version>
     </properties>
 
     <dependencies>
@@ -45,16 +45,19 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-aws</artifactId>
             <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-hadoop-cloud_${scala.version}</artifactId>
-            <version>${hadoop.version}</version>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
