@@ -78,13 +78,13 @@ object Queries {
                 | WHERE d_date_sk = sold_date_sk
                 | GROUP BY d_week_seq)
                 | SELECT d_week_seq1
-                |       ,round(sun_sales1/sun_sales2,2)
-                |       ,round(mon_sales1/mon_sales2,2)
-                |       ,round(tue_sales1/tue_sales2,2)
-                |       ,round(wed_sales1/wed_sales2,2)
-                |       ,round(thu_sales1/thu_sales2,2)
-                |       ,round(fri_sales1/fri_sales2,2)
-                |       ,round(sat_sales1/sat_sales2,2)
+                |       ,round(sun_sales1/sun_sales2,2) as round_sun_sales1_div_sun_sales2
+                |       ,round(mon_sales1/mon_sales2,2) as round_mon_sales1_div_mon_sales2
+                |       ,round(tue_sales1/tue_sales2,2) as round_tue_sales1_div_tue_sales2
+                |       ,round(wed_sales1/wed_sales2,2) as round_wed_sales1_div_wed_sales2
+                |       ,round(thu_sales1/thu_sales2,2) as round_thu_sales1_div_thu_sales2
+                |       ,round(fri_sales1/fri_sales2,2) as round_fri_sales1_div_fri_sales2
+                |       ,round(sat_sales1/sat_sales2,2) as round_sat_sales1_div_sat_sales2
                 | FROM
                 | (SELECT wswscs.d_week_seq d_week_seq1
                 |        ,sun_sales sun_sales1
