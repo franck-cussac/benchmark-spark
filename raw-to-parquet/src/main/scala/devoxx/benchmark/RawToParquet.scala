@@ -1,7 +1,5 @@
 package devoxx.benchmark
 
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider
-import com.amazonaws.services.s3.AmazonS3Client
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import scala.util._
@@ -30,7 +28,6 @@ object RawToParquet {
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.endpoint", s"https://s3.$region.scw.cloud");
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", access_key)
       spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
-      spark.sparkContext.hadoopConfiguration.set("mapreduce.fileoutputcommitter.algorithm.version", "2")
       rawToParquet(inputFile, outputFile, inputFile.split('/').last)
     }
     if (res.isFailure) {

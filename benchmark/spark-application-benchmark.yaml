@@ -7,7 +7,7 @@ spec:
   type: Scala
   mode: cluster
   sparkVersion: 3.2.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/benchmark:1.0
+  image: rg.fr-par.scw.cloud/benchmark-spark/benchmark:fix-col
   imagePullPolicy: Always
   mainClass: ked.Benchmark
   mainApplicationFile: local:///opt/spark/examples/jars/spark-benchmark.jar
@@ -15,7 +15,13 @@ spec:
     spark.eventLog.enabled: "true"
     spark.eventLog.dir: s3a://datalake-benchmark-spark/spark-history-server/
   hadoopConf:
-    mapreduce.fileoutputcommitter.algorithm.version: "2"
+    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "fs.s3a.committer.magic.enabled": "true"
+    "fs.s3a.committer.name": "magic"
+    "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
+    "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol"
+    "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+    "mapreduce.fileoutputcommitter.algorithm.version": "2"
   driver:
     env:
       - name: REGION
@@ -25,11 +31,11 @@ spec:
       - name: OUTPUT
         value: "s3a://datalake-benchmark-spark/data/results"
       - name: EXPERIMENT_NAME
-        value: "tpcds-none"
+        value: "tpcds-magic"
       - name: QUERY_MODE
         value: "tpcds"
       - name: OUTPUT_MODE
-        value: "none"
+        value: "parquet"
     envFrom:
       - secretRef:
           name: scw-secrets

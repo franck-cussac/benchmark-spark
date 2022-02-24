@@ -7,18 +7,26 @@ spec:
   type: Scala
   mode: cluster
   sparkVersion: 3.1.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:1
+  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:parquet-hadoop-3-3-1
   imagePullPolicy: Always
   mainClass: devoxx.benchmark.RawToParquet
   mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
+  hadoopConf:
+    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "fs.s3a.committer.magic.enabled": "true"
+    "fs.s3a.committer.name": "magic"
+    "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
+    "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol"
+    "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+    "mapreduce.fileoutputcommitter.algorithm.version": "2"
   driver:
     env:
       - name: REGION
         value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/web_sales"
+        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/web_returns"
       - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/web_sales"
+        value: "s3a://datalake-benchmark-spark/data/test/TPC-DS/10TB/web_returns2"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -30,14 +38,6 @@ spec:
     serviceAccount: spark-kube
   executor:
     serviceAccount: spark-kube
-    env:
-      - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/web_sales"
-      - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/web_sales"
-    envFrom:
-      - secretRef:
-          name: scw-secrets
     cores: 3
-    instances: 60
+    instances: 14
     memory: "16g"

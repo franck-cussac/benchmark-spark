@@ -1,16 +1,19 @@
 apiVersion: sparkoperator.k8s.io/v1beta2
 kind: SparkApplication
 metadata:
-  name: raw-to-parquet-4
+  name: raw-to-parquet-4-algov1
   namespace: spark
 spec:
   type: Scala
   mode: cluster
   sparkVersion: 3.1.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:1
+  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:parquet-hadoop-3-3-1
   imagePullPolicy: Always
   mainClass: devoxx.benchmark.RawToParquet
   mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
+  hadoopConf:
+    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "mapreduce.fileoutputcommitter.algorithm.version": "1"
   driver:
     env:
       - name: REGION
@@ -18,7 +21,7 @@ spec:
       - name: INPUT
         value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/inventory"
       - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/inventory"
+        value: "s3a://datalake-benchmark-spark/data/write-benchmark/fileoutputcommitter1/TPC-DS/10TB/inventory"
     envFrom:
       - secretRef:
           name: scw-secrets
@@ -30,14 +33,6 @@ spec:
     serviceAccount: spark-kube
   executor:
     serviceAccount: spark-kube
-    env:
-      - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/inventory"
-      - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/inventory"
-    envFrom:
-      - secretRef:
-          name: scw-secrets
     cores: 3
-    instances: 15
+    instances: 3
     memory: "16g"
