@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ked</groupId>
     <artifactId>spark-dep</artifactId>
-    <version>3.2.1</version>
+    <version>3.3.0</version>
     <name>${project.artifactId}</name>
     <description>
         spark-dependency in a fat jar
@@ -12,7 +12,7 @@
     <properties>
         <scala.version>2.12</scala.version>
         <scala.exact.version>${scala.version}.15</scala.exact.version>
-        <spark.version>3.2.1</spark.version>
+        <spark.version>3.3.0</spark.version>
         <hadoop.version>3.3.1</hadoop.version>
     </properties>
 
