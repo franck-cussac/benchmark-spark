@@ -5,7 +5,6 @@ metadata:
   name: {{ template "spark-hs.fullname" . }}-spark-hs-config
 data:
   spark-defaults.conf: |-
-    spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID
-    spark.hadoop.fs.s3a.secret.key=$AWS_SECRET_ACCESS_KEY
-    spark.hadoop.fs.s3a.endpoint=https://s3.fr-par.scw.cloud
+    spark.hadoop.fs.s3a.endpoint=s3.eu-west-1.amazonaws.com
     spark.history.fs.logDirectory={{ .Values.sparkEventLogStorage.logDirectory }}
+    spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.WebIdentityTokenCredentialsProvider

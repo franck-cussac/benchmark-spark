@@ -1,4 +1,4 @@
-package devoxx.benchmark
+package hymaia.benchmark
 
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
@@ -19,15 +19,9 @@ object RawToParquet {
     println(s"sys.env = ${sys.env}")
 
     val res = for {
-      region <- sys.env.get("REGION").toTry("region parameter not found")
-      access_key <- sys.env.get("SCW_ACCESS_KEY").toTry("access_key parameter not found")
-      secret_key <- sys.env.get("SCW_SECRET_KEY").toTry("secret_key parameter not found")
       inputFile <- sys.env.get("INPUT").toTry("input parameter not found")
       outputFile <- sys.env.get("OUTPUT").toTry("output parameter not found")
     } yield {
-      spark.sparkContext.hadoopConfiguration.set("fs.s3a.endpoint", s"https://s3.$region.scw.cloud");
-      spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", access_key)
-      spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", secret_key)
       rawToParquet(inputFile, outputFile, inputFile.split('/').last)
     }
     if (res.isFailure) {

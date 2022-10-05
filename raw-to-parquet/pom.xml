@@ -8,9 +8,9 @@
     <properties>
         <scala.version>2.12</scala.version>
         <scala.exact.version>${scala.version}.15</scala.exact.version>
-        <spark.version>3.1.1</spark.version>
+        <spark.version>3.3.0</spark.version>
         <scala.test.version>3.0.8</scala.test.version>
-        <hadoop.version>3.2.0</hadoop.version>
+        <hadoop.version>3.3.1</hadoop.version>
     </properties>
 
     <dependencies>

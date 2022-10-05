@@ -1,4 +1,4 @@
-package ked
+package hymaia
 
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
@@ -16,12 +16,7 @@ object Benchmark {
     }
 
     def main(args: Array[String]): Unit = {
-        println(s"sys.env = ${sys.env}")
-        
         val res = for {
-            region <- sys.env.get("REGION").toTry("region parameter not found")
-            access_key <- sys.env.get("SCW_ACCESS_KEY").toTry("access_key parameter not found")
-            secret_key <- sys.env.get("SCW_SECRET_KEY").toTry("secret_key parameter not found")
             inputPath <- sys.env.get("INPUT").toTry("input parameter not found")
             outputPath <- sys.env.get("OUTPUT").toTry("output parameter not found")
             experimentName <- sys.env.get("EXPERIMENT_NAME").toTry("experiment_name parameter not found")
@@ -30,9 +25,6 @@ object Benchmark {
         } yield {
             implicit val spark: SparkSession = SparkSession.builder()
                 .appName(APP_NAME)
-                .config("spark.hadoop.fs.s3a.endpoint", s"https://s3.$region.scw.cloud")
-                .config("spark.hadoop.fs.s3a.access.key", access_key)
-                .config("spark.hadoop.fs.s3a.secret.key", secret_key)
                 .getOrCreate()
 
             val r = Try(

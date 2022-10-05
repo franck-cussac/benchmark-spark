@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: rg.fr-par.scw.cloud/benchmark-spark/spark
-  tag: "3.2.1"
+  repository: public.ecr.aws/hymaia/spark
+  tag: "3.3"
   pullPolicy: Always
 
 service:
@@ -34,10 +34,8 @@ ingress:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
   path: / # Capture target URI part to remove basePath on `rewrite-target` above
-  host: "spark-history-server.729b3aaa-7e79-48fe-bbd6-4579f04538b2.nodes.k8s.fr-par.scw.cloud"
   tls: []
 
 sparkEventLogStorage:
   cloudProvider: "aws"
-  logDirectory: "s3a://datalake-benchmark-spark/spark-history-server/"
-  secretName: "scw-secrets"
+  logDirectory: "s3a://dev-hyma-kube-datalake/spark-history-server/"

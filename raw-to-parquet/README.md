@@ -21,9 +21,7 @@ Create a Kubernetes cluster on Scaleway with an autoscaling pool 0-20 nodes usin
 
 ### 1. Initialisation
 ```bash
-helm install spark-operator spark-operator/spark-operator --namespace spark-operator --create-namespace --set image.repository=ghcr.io/googlecloudplatform/spark-operator --set image.tag=v1beta2-1.3.3-3.1.1 --set webhook.enable=true
-kubectl apply -f namespace.yaml
-kubectl apply -f serviceaccount.yaml -n spark
+helm install spark-operator spark-operator/spark-operator --namespace spark --create-namespace --set image.repository=ghcr.io/googlecloudplatform/spark-operator --set image.tag=v1beta2-1.3.7-3.1.1 --set webhook.enable=true
 kubectl create secret generic scw-secrets --from-literal SCW_ACCESS_KEY=<access_token> --from-literal SCW_SECRET_KEY=<access_secret> -n spark
 ```
 

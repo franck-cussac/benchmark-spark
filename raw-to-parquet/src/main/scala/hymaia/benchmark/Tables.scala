@@ -1,9 +1,36 @@
-package ked
+package hymaia.benchmark
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 
 object Tables {
+    val tableName = Seq(
+        "call_center",
+        "catalog_page",
+        "catalog_returns",
+        "catalog_sales",
+        "customer",
+        "customer_address",
+        "customer_demographics",
+        "date_dim",
+        "household_demographics",
+        "income_band",
+        "inventory",
+        "item",
+        "promotion",
+        "reason",
+        "ship_mode",
+        "store",
+        "store_returns",
+        "store_sales",
+        "time_dim",
+        "warehouse",
+        "web_page",
+        "web_returns",
+        "web_sales",
+        "web_site",
+    )
+
     val schemas = Map(
     "catalog_sales" -> StructType(Seq(
       StructField("cs_sold_date_sk",          IntegerType),
@@ -480,44 +507,13 @@ object Tables {
     ))
   )
 
-    def createSimple(inputPath: String)(implicit spark: SparkSession): Unit = {
-        Seq("store_sales").foreach(read(inputPath))
-    }
-
-    def createTest(inputPath: String)(implicit spark: SparkSession): Unit = {
-        Seq("web_page").foreach(read(inputPath))
-    }
-
     def createAll(inputPath: String)(implicit spark: SparkSession): Unit = {
-      Seq(
-        "call_center",
-        "catalog_page",
-        "catalog_returns",
-        "catalog_sales",
-        "customer",
-        "customer_address",
-        "customer_demographics",
-        "date_dim",
-        "household_demographics",
-        "income_band",
-        "inventory",
-        "item",
-        "promotion",
-        "reason",
-        "ship_mode",
-        "store",
-        "store_returns",
-        "store_sales",
-        "time_dim",
-        "warehouse",
-        "web_page",
-        "web_returns",
-        "web_sales",
-        "web_site",
-      ).foreach(read(inputPath))
+        tableName.foreach(read(inputPath))
     }
 
     def read(path: String)(tableName: String)(implicit spark: SparkSession): Unit = {
-        spark.read.parquet(s"$path/$tableName").createOrReplaceTempView(tableName)
+        val rdd = spark.read.parquet(s"$path/$tableName").rdd
+        val schema = schemas(tableName)
+        spark.createDataFrame(rdd, schema).createOrReplaceTempView(tableName)
     }
 }

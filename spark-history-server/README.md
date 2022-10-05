@@ -9,7 +9,7 @@
 To install the chart:
 
 ```
-$ helm install --set app.logDirectory=yourBucketName/eventLogFoloder,app.cloudProvider=amazon banzaicloud-stable/spark-hs
+$ helm install spark-hs -n spark -f values.yaml .
 ```
 
 ## Configuration

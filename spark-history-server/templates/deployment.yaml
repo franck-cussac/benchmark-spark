@@ -15,30 +15,11 @@ spec:
       labels:
         app: {{ template "spark-hs.fullname" . }}
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: k8s.scaleway.com/pool-name
-                operator: In
-                values:
-                - default
+      serviceAccountName: spark-kube
       initContainers:
       - name: {{ .Chart.Name }}-init-config
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        env:
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.sparkEventLogStorage.secretName }}
-                key: SCW_ACCESS_KEY
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.sparkEventLogStorage.secretName }}
-                key: SCW_SECRET_KEY
         command:
           - '/bin/sh'
           - '-c'

@@ -6,16 +6,16 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  sparkVersion: 3.2.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/benchmark:fix-col
+  sparkVersion: 3.3.0
+  image: public.ecr.aws/hymaia/benchmark:3.3
   imagePullPolicy: Always
-  mainClass: ked.Benchmark
+  mainClass: hymaia.Benchmark
   mainApplicationFile: local:///opt/spark/examples/jars/spark-benchmark.jar
   sparkConf:
     spark.eventLog.enabled: "true"
-    spark.eventLog.dir: s3a://datalake-benchmark-spark/spark-history-server/
+    spark.eventLog.dir: s3a://dev-hyma-kube-datalake/spark-history-server/
   hadoopConf:
-    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "fs.s3a.aws.credentials.provider": "com.amazonaws.auth.WebIdentityTokenCredentialsProvider"
     "fs.s3a.committer.magic.enabled": "true"
     "fs.s3a.committer.name": "magic"
     "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
@@ -24,45 +24,23 @@ spec:
     "mapreduce.fileoutputcommitter.algorithm.version": "2"
   driver:
     env:
-      - name: REGION
-        value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/"
+        value: "s3a://dev-hyma-kube-datalake/data/raw/TPC-DS/10TB/"
       - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/results"
+        value: "s3a://dev-hyma-kube-datalake/output"
       - name: EXPERIMENT_NAME
         value: "tpcds-magic"
       - name: QUERY_MODE
         value: "tpcds"
       - name: OUTPUT_MODE
         value: "parquet"
-    envFrom:
-      - secretRef:
-          name: scw-secrets
-    cores: 1
-    memory: "1024m"
-    hostNetwork: true
+    cores: 3
+    memory: "12g"
     labels:
-      version: 3.2.1
+      version: 3.3.0
     serviceAccount: spark-kube
   executor:
     serviceAccount: spark-kube
-    env:
-      - name: REGION
-        value: "fr-par"
-      - name: INPUT
-        value: "s3a://datalake-benchmark-spark/data/clean/TPC-DS/10TB/"
-      - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/results"
-      - name: EXPERIMENT_NAME
-        value: "test"
-      - name: QUERY_MODE
-        value: "test"
-      - name: OUTPUT_MODE
-        value: "none"
-    envFrom:
-      - secretRef:
-          name: scw-secrets
-    cores: 5
-    instances: 35
-    memory: "28g"
+    cores: 3
+    instances: 10
+    memory: "12g"

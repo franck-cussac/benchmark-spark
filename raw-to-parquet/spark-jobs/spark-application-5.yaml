@@ -6,35 +6,36 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  sparkVersion: 3.2.1
-  image: rg.fr-par.scw.cloud/benchmark-spark/raw-to-parquet:csv-hadoop-3-3-1
+  sparkVersion: 3.3.0
+  image: public.ecr.aws/d6a5g1e2/raw-to-parquet:3.3
   imagePullPolicy: Always
-  mainClass: devoxx.benchmark.RawToParquet
+  mainClass: hymaia.benchmark.RawToParquet
   mainApplicationFile: local:///opt/spark/examples/jars/raw-to-parquet-0.0.1-SNAPSHOT-shaded.jar
+  sparkConf:
+    spark.eventLog.enabled: "true"
+    spark.eventLog.dir: s3a://dev-hyma-kube-datalake/spark-history-server/
   hadoopConf:
-    "fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider"
+    "fs.s3a.aws.credentials.provider": "com.amazonaws.auth.WebIdentityTokenCredentialsProvider"
     "fs.s3a.committer.magic.enabled": "true"
     "fs.s3a.committer.name": "magic"
-    "mapreduce.fileoutputcommitter.algorithm.version": "20"
+    "mapreduce.outputcommitter.factory.scheme.s3a": "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory"
+    "spark.sql.sources.commitProtocolClass": "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol"
+    "spark.sql.parquet.output.committer.class": "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter"
+    "mapreduce.fileoutputcommitter.algorithm.version": "2"
   driver:
     env:
-      - name: REGION
-        value: "fr-par"
       - name: INPUT
-        value: "s3a://datalake-spark-benchmark/data/TPC-DS/10TB/catalog_sales"
+        value: "s3a://redshift-downloads/TPC-DS/2.13/10TB/catalog_sales"
       - name: OUTPUT
-        value: "s3a://datalake-benchmark-spark/data/raw/TPC-DS/10TB/catalog_sales"
-    envFrom:
-      - secretRef:
-          name: scw-secrets
+        value: "s3a://dev-hyma-kube-datalake/data/raw/TPC-DS/10TB/catalog_sales"
     cores: 1
     memory: "1024m"
     hostNetwork: true
     labels:
-      version: 3.1.1
+      version: 3.3.0
     serviceAccount: spark-kube
   executor:
     serviceAccount: spark-kube
-    cores: 3
-    instances: 80
-    memory: "16g"
+    cores: 2
+    instances: 8
+    memory: "8g"

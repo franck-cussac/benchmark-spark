@@ -1,5 +1,5 @@
-
+# Build
 
 ```sh
-docker build -t rg.fr-par.scw.cloud/benchmark-spark/benchmark:1.0 .
+docker build -t public.ecr.aws/hymaia/benchmark:3.3 .
 ```
